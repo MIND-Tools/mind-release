@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.ow2.mind</groupId>
+        <artifactId>mind-parent</artifactId>
+        <version>3</version>
+    </parent>
+
+    <artifactId>mind-release</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <name>Mind release</name>
+
+    <properties>
+        <mindc.version>0.2.3</mindc.version>
+        <mindoc.version>0.2.3</mindoc.version>
+        <mind-test.version>0.1-SNAPSHOT</mind-test.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack-mindc</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>mindc</artifactId>
+                                    <version>${mindc.version}</version>
+                                    <classifier>bin</classifier>
+                                    <type>tar.bz2</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/bin-assemblies</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>unpack-mindc-src</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>mindc</artifactId>
+                                    <version>${mindc.version}</version>
+                                    <classifier>src</classifier>
+                                    <type>tar.bz2</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/src-assemblies</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>unpack-mindoc</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>mindoc</artifactId>
+                                    <version>${mindoc.version}</version>
+                                    <classifier>bin</classifier>
+                                    <type>tar.bz2</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/bin-assemblies</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>unpack-mind-test</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>mind-test</artifactId>
+                                    <version>${mind-test.version}</version>
+                                    <classifier>bin</classifier>
+                                    <type>tar.bz2</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/bin-assemblies</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>unpack-mind-test-src</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>mind-test</artifactId>
+                                    <version>${mind-test.version}</version>
+                                    <classifier>src</classifier>
+                                    <type>tar.bz2</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/src-assemblies</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <executions>
+                    <!-- Generates binary assemblies at package phase. -->
+                    <!-- <execution> <id>bin-packages</id> <phase>package</phase> 
+                        <goals> <goal>single</goal> </goals> <configuration> <descriptors> <descriptor>src/assemble/bin-release.xml</descriptor> 
+                        </descriptors> </configuration> </execution> -->
+
+                    <!-- Generates directory assembly for integration test -->
+                    <execution>
+                        <id>bin-dir</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>directory-single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assemble/bin-release.xml</descriptor>
+                            </descriptors>
+                            <outputDirectory>
+                                ${project.build.directory}
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>build mindc user-guide</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <pom>${project.build.directory}/src-assemblies/mindc-${mindc.version}/pom.xml</pom>
+                            <goals>
+                                <goal>pre-site</goal>
+                            </goals>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>build mind-test user-guide</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <pom>${project.build.directory}/src-assemblies/mind-test-${mind-test.version}/pom.xml</pom>
+                            <goals>
+                                <goal>pre-site</goal>
+                            </goals>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>build runtime doc</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.build.directory}/bin-assemblies/mindoc-${mindoc.version}/bin/mindoc</executable>
+                            <arguments>
+                                <argument>-d${project.build.directory}/runtime-doc</argument>
+                                <argument>${project.build.directory}/bin-assemblies/mindc-${mindc.version}/runtime</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build release doc</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>
